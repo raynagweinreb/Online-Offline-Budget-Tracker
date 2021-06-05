@@ -1,12 +1,12 @@
 
 let db;
-
-let request = indexedDB.open('Budgetdb', 1);
+let budgetVersion
+const request = indexedDB.open('BudgetDB', budgetVersion || 1);
 
 function checkDatabase(){
-    let transaction = db.transaction(['Offline_Transaction'],'readwrite')
+    let transaction = db.transaction(['BudgetStore'],'readwrite')
 
-    let store = transaction.createObjectStore('Offline_Transaction')
+    let store = transaction.objectStore('BudgetStore')
 
     let returnAll = store.getAll()
 
@@ -22,8 +22,8 @@ function checkDatabase(){
                 response.json())
             .then((response)=>{
                 if (response.length !== 0){
-                    transaction =db.transaction(["Offline_Transaction"],'readwrite')
-                let store = transaction.createObjectStore('Offline_Transaction')
+                    transaction =db.transaction(["BudgetStore"],'readwrite')
+                let store = transaction.objectStore('BudgetStore')
             store.clear()
             console.log('Hold tight while we clear your stored transactions')    
             
@@ -37,7 +37,7 @@ request.onupgradeneeded = function (e) {
     const newVersion = e.newVersion || db.version;
 console.log(`DB updated from version${oldVersion} to ${newVersion}`)
     db = e.target.result
-    db.createObjectStore("Offline_Transcation",{autoIncrement: true})
+    db.objectStore("BudgetStore",{autoIncrement: true})
 
 }
 
@@ -51,9 +51,9 @@ request.onerror = function(e){
     console.log(`Looks like we have run into an error! ${target.errorCode}`)
 }
 
-const saveTransaction = (record)=>{
-    let transaction = db.transaction(["Offline_Transaction"],"readwrite");
-    let store = transaction.createObjectStore("Offline_Transaction")
+const saveRecord = (record)=>{
+    let transaction = db.transaction(["BudgetStore"],"readwrite");
+    let store = transaction.objectStore("BudgetStore")
     store.add(record)
 }
 
